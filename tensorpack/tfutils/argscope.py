@@ -5,8 +5,6 @@
 from contextlib import contextmanager
 from collections import defaultdict
 import copy
-# import inspect
-# import six
 
 __all__ = ['argscope', 'get_arg_scope']
 

@@ -44,4 +44,4 @@ def FullyConnected(x, *args, **kwargs):
     ret.variables = VariableHolder(W=layer.kernel)
     if tfargs.get('use_bias', True):
         ret.variables.b = layer.bias
-    return ret
+    return tf.identity(ret, name='output')
