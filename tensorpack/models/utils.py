@@ -57,6 +57,28 @@ def rename_get_variable(mapping):
     return custom_getter_scope(custom_getter)
 
 
+def parse_args(args, kwargs, args_names, name_mapping):
+    if 'nl' in kwargs:
+        old_nl = kwargs.pop('nl')
+        kwargs['activation'] = lambda x: old_nl(x, name='output')
+
+    ret = {}
+    assert len(args) <= len(args_names), \
+        "Please use kwargs to call the model, except the following arguments: {}".format(','.join(args_names))
+    for pos_arg, name in zip(args, args_names):
+        ret[name] = pos_arg
+
+    for name, arg in six.iteritems(kwargs):
+        newname = name_mapping.get(name, None)
+        if newname is not None:
+            assert newname not in kwargs and newname not in ret, \
+                "Argument {} and {} conflicts!".format(name, newname)
+        else:
+            newname = name
+        ret[newname] = arg
+    return ret
+
+
 def monkeypatch_tf_layers():
     if get_tf_version_number() < 1.4:
         if not hasattr(tf.layers, 'Dense'):
