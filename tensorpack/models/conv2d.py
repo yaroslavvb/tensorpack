@@ -4,9 +4,10 @@
 
 
 import tensorflow as tf
-from .common import layer_register, VariableHolder, rename_get_variable
+from .common import layer_register, VariableHolder
 from ..tfutils.common import get_tf_version_number
 from ..utils.argtools import shape2d, shape4d, get_data_format
+from .tflayer import rename_get_variable, parse_args
 
 __all__ = ['Conv2D', 'Deconv2D']
 
@@ -86,51 +87,35 @@ def Conv2D(x, out_channel, kernel_shape,
 
 
 @layer_register(log_shape=True)
-def Deconv2D(x, out_channel, kernel_shape,
-             stride, padding='SAME',
-             W_init=None, b_init=None,
-             activation=tf.identity, use_bias=True,
-             data_format='channels_last'):
+def Deconv2D(x, *args, **kwargs):
     """
-    2D deconvolution on 4D inputs.
+    A wrapper around `tf.layers.Conv2DTranspose`.
 
-    Args:
-        x (tf.Tensor): a tensor of shape NHWC.
-            Must have known number of channels, but can have other unknown dimensions.
-        out_channel: the output number of channel.
-        kernel_shape: (h, w) tuple or a int.
-        stride: (h, w) tuple or a int.
-        padding (str): 'valid' or 'same'. Case insensitive.
-        W_init: initializer for W. Defaults to `tf.variance_scaling_initializer(2.0)`, i.e. kaiming-normal.
-        b_init: initializer for b. Defaults to zero.
-        use_bias (bool): whether to use bias.
-
-    Returns:
-        tf.Tensor: a NHWC tensor named ``output`` with attribute `variables`.
+    Differences: Default weight initializer is variance_scaling_initializer(2.0).
 
     Variable Names:
 
     * ``W``: weights
     * ``b``: bias
     """
-    if W_init is None:
-        W_init = tf.variance_scaling_initializer(scale=2.0)
-    if b_init is None:
-        b_init = tf.constant_initializer()
+
+    tfargs = parse_args(
+        args=args, kwargs=kwargs,
+        args_names=['filters', 'kernel_size'],
+        name_mapping={
+            'stride': 'strides',
+            'W_init': 'kernel_initializer',
+            'b_init': 'bias_initializer'
+        }
+    )
+    tfargs.setdefault('kernel_initializer', tf.variance_scaling_initializer(scale=2.0))
+    tfargs.setdefault('bias_initializer', tf.constant_initializer())
 
     with rename_get_variable({'kernel': 'W', 'bias': 'b'}):
-        layer = tf.layers.Conv2DTranspose(
-            out_channel, kernel_shape,
-            strides=stride, padding=padding,
-            data_format=data_format,
-            activation=activation,
-            use_bias=use_bias,
-            kernel_initializer=W_init,
-            bias_initializer=b_init,
-            trainable=True)
+        layer = tf.layers.Conv2DTranspose(**tfargs)
         ret = layer.apply(x, scope=tf.get_variable_scope())
 
     ret.variables = VariableHolder(W=layer.kernel)
-    if use_bias:
+    if tfargs.get('use_bias', True):
         ret.variables.b = layer.bias
     return tf.identity(ret, name='output')

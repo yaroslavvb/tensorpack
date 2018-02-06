@@ -8,8 +8,8 @@ import numpy as np
 from .shape_utils import StaticDynamicShape
 from .common import layer_register
 from ..utils.argtools import shape2d, get_data_format
-from .utils import parse_args
 from ._test import TestModel
+from .tflayer import parse_args
 
 
 __all__ = ['MaxPooling', 'FixedUnPooling', 'AvgPooling', 'GlobalAvgPooling',

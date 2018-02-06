@@ -5,8 +5,8 @@
 
 import tensorflow as tf
 
-from .common import layer_register, rename_get_variable, VariableHolder
-from .utils import parse_args
+from .common import layer_register, VariableHolder
+from .tflayer import parse_args, rename_get_variable
 from ..tfutils import symbolic_functions as symbf
 
 __all__ = ['FullyConnected']
@@ -25,8 +25,7 @@ def FullyConnected(x, *args, **kwargs):
     * ``b``: bias
     """
     tfargs = parse_args(
-        args=args,
-        kwargs=kwargs,
+        args=args, kwargs=kwargs,
         args_names=['units'],
         name_mapping={
             'out_dim': 'units',
