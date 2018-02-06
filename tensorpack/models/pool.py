@@ -67,13 +67,7 @@ def GlobalAvgPooling(x, data_format='channels_last'):
         tf.Tensor: a NC tensor named ``output``.
     """
     assert x.shape.ndims == 4
-<<<<<<< HEAD
     axis = [1, 2] if data_format == 'channels_last' else [2, 3]
-=======
-    data_format = _DATAFORMAT_MAP_FROM_TF.get(data_format, data_format)
-    assert data_format in ['NHWC', 'NCHW']
-    axis = [1, 2] if data_format == 'NHWC' else [2, 3]
->>>>>>> pool
     return tf.reduce_mean(x, axis, name='output')
 
 

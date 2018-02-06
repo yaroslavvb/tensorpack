@@ -57,26 +57,7 @@ def rename_get_variable(mapping):
     return custom_getter_scope(custom_getter)
 
 
-_DATAFORMAT_MAP_TO_TF = {
-    'NCHW': 'channels_first',
-    'NHWC': 'channels_last'
-}
-
-
-_DATAFORMAT_MAP_FROM_TF = {
-    'channels_first': 'NCHW',
-    'channels_last': 'NHWC'
-}
-
-
 def parse_args(args, kwargs, args_names, name_mapping):
-    if 'nl' in kwargs:
-        old_nl = kwargs.pop('nl')
-        kwargs['activation'] = lambda x: old_nl(x, name='output')
-    if 'data_format' in kwargs:
-        old_df = kwargs['data_format'].upper()
-        kwargs['data_format'] = _DATAFORMAT_MAP_TO_TF.get(old_df, old_df)
-
     ret = {}
     assert len(args) <= len(args_names), \
         "Please use kwargs to call the model, except the following arguments: {}".format(','.join(args_names))
