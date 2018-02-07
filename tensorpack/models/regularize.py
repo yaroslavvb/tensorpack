@@ -134,7 +134,7 @@ def Dropout(x, *args, **kwargs):
     if len(args) > 0:
         logger.warn(
             "The first positional argument to tensorpack.Dropout is the probability to keep rather than to drop. "
-            "This is different from the rate argument in tf.layers.Dropout due to historical reasons."
+            "This is different from the rate argument in tf.layers.Dropout due to historical reasons. "
             "To mimic tf.layers.Dropout, use keyword argument 'rate' instead")
         rate = 1 - tfargs.pop('rate')
     elif 'keep_prob' in tfargs:

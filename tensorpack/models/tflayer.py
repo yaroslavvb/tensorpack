@@ -5,11 +5,32 @@
 import tensorflow as tf
 import six
 
+from ..utils.argtools import get_data_format
 from ..tfutils.common import get_tf_version_number
 from ..tfutils.varreplace import custom_getter_scope
 
 
+def map_common_tfargs(kwargs):
+    df = kwargs.pop('data_format', None)
+    if df is not None:
+        df = get_data_format(df, tfmode=True)
+        kwargs['data_format'] = df
+
+    old_nl = kwargs.pop('nl', None)
+    if old_nl is not None:
+        kwargs['activation'] = lambda x, name=None: old_nl(x, name=name)
+
+    if 'W_init' in kwargs:
+        kwargs['kernel_initializer'] = kwargs.pop('W_init')
+
+    if 'b_init' in kwargs:
+        kwargs['bias_initializer'] = kwargs.pop('b_init')
+    return kwargs
+
+
 def parse_args(args, kwargs, args_names, name_mapping):
+    kwargs = map_common_tfargs(kwargs)
+
     posarg_dic = {}
     assert len(args) <= len(args_names), \
         "Please use kwargs to call the model, except the following arguments: {}".format(','.join(args_names))

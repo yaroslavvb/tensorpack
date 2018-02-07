@@ -28,9 +28,8 @@ def FullyConnected(x, *args, **kwargs):
         args=args, kwargs=kwargs,
         args_names=['units'],
         name_mapping={
-            'out_dim': 'units',
-            'W_init': 'kernel_initializer',
-            'b_init': 'bias_initializer'})
+            'out_dim': 'units'
+        })
     tfargs.setdefault('kernel_initializer', tf.variance_scaling_initializer(2.0))
     tfargs.setdefault('bias_initializer', tf.constant_initializer())
 

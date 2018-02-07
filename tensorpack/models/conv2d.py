@@ -38,8 +38,6 @@ def Conv2D(x, *args, split=1, **kwargs):
             'out_channel': 'filters',
             'kernel_shape': 'kernel_size',
             'stride': 'strides',
-            'W_init': 'kernel_initializer',
-            'b_init': 'bias_initializer'
         }
     )
     tfargs.setdefault('kernel_initializer', tf.variance_scaling_initializer(scale=2.0))
@@ -123,9 +121,7 @@ def Deconv2D(x, *args, **kwargs):
         name_mapping={
             'out_channel': 'filters',
             'kernel_shape': 'kernel_size',
-            'stride': 'strides',
-            'W_init': 'kernel_initializer',
-            'b_init': 'bias_initializer'
+            'stride': 'strides'
         }
     )
     tfargs.setdefault('kernel_initializer', tf.variance_scaling_initializer(scale=2.0))
